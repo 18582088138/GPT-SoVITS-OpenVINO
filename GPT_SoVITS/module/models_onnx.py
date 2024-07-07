@@ -777,15 +777,15 @@ class CodePredictor(nn.Module):
             loss = torch.nn.functional.cross_entropy(logits, target)
             return loss
         else:
-            _, top10_preds = torch.topk(logits, 10, dim=-1)
-            correct_top10 = torch.any(top10_preds == target.unsqueeze(-1), dim=-1)
-            top3_acc = 100 * torch.mean(correct_top10.float()).detach().cpu().item()
+            # _, top10_preds = torch.topk(logits, 10, dim=-1)
+            # correct_top10 = torch.any(top10_preds == target.unsqueeze(-1), dim=-1)
+            # top3_acc = 100 * torch.mean(correct_top10.float()).detach().cpu().item()
 
-            print("Top-10 Accuracy:", top3_acc, "%")
+            # print("Top-10 Accuracy:", top3_acc, "%")
 
             pred_codes = torch.argmax(logits, dim=-1)
-            acc = 100 * torch.mean((pred_codes == target).float()).detach().cpu().item()
-            print("Top-1 Accuracy:", acc, "%")
+            # acc = 100 * torch.mean((pred_codes == target).float()).detach().cpu().item()
+            # print("Top-1 Accuracy:", acc, "%")
 
             return pred_codes.transpose(0, 1)
 

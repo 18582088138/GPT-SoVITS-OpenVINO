@@ -34,7 +34,8 @@ def logits_to_probs(
     top_p = None,
     repetition_penalty: float = 1.0,
 ):
-    previous_tokens = previous_tokens.squeeze()
+    #print(previous_tokens.shape)
+    previous_tokens = previous_tokens.squeeze(dim=0)
     if previous_tokens is not None and repetition_penalty != 1.0:
         previous_tokens = previous_tokens.long()
         score = torch.gather(logits, dim=0, index=previous_tokens)
@@ -56,6 +57,8 @@ def logits_to_probs(
         logits = logits.masked_fill(indices_to_remove, -float("Inf"))
 
     logits = logits / max(temperature, 1e-5)
+
+    #print(top_k)
 
     if top_k is not None:
         v, _ = torch.topk(logits, top_k)
@@ -251,10 +254,10 @@ class Text2SemanticDecoder(nn.Module):
     def init_onnx(self):
         self.onnx_encoder = OnnxEncoder(self.ar_text_embedding, self.bert_proj, self.ar_text_position)
         self.first_stage_decoder = T2SFirstStageDecoder(self.ar_audio_embedding, self.ar_audio_position, self.h, 
-            self.ar_predict_layer, self.loss_fct, self.ar_accuracy_metric, self.top_k, self.early_stop_num,
+            self.ar_predict_layer, self.loss_fct, self.ar_accuracy_metric, self.top_k.squeeze(), self.early_stop_num,
             self.num_layers)
         self.stage_decoder = T2SStageDecoder(self.ar_audio_embedding, self.ar_audio_position, self.h, 
-            self.ar_predict_layer, self.loss_fct, self.ar_accuracy_metric, self.top_k, self.early_stop_num,
+            self.ar_predict_layer, self.loss_fct, self.ar_accuracy_metric, self.top_k.squeeze(), self.early_stop_num,
             self.num_layers)
 
     def forward(self, x, prompts, bert_feature):

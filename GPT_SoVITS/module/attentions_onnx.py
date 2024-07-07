@@ -240,7 +240,7 @@ class MultiHeadAttention(nn.Module):
         slice_end_position = slice_start_position + 2 * length - 1
         padded_relative_embeddings = F.pad(
             relative_embeddings,
-            commons.convert_pad_shape([[0, 0], [pad_length, pad_length], [0, 0]]),
+            commons.convert_pad_shape([[0, 0], [pad_length.squeeze(), pad_length.squeeze()], [0, 0]]),
         )
         used_relative_embeddings = padded_relative_embeddings[
             :, slice_start_position:slice_end_position
